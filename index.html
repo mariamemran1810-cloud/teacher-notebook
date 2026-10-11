@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="كراسة المعلم الليبي الرقمية - رياضيات المرحلة الإعدادية">
+  <title>كراسة المعلم الليبي الرقمية – رياضيات المرحلة الإعدادية</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-locked">
+
+<!-- ===== شاشة الدخول: تظهر قبل كل شيء حتى تُفتح الكراسة ===== -->
+<div id="authScreen" class="auth-screen no-print" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <span class="brand-mark">📘</span>
+      <span class="brand-text">
+        <strong>كراسة المعلم الليبي الرقمية</strong>
+        <small>رياضيات المرحلة الإعدادية</small>
+      </span>
+    </div>
+
+    <h2 id="authTitle">مرحبًا بكِ</h2>
+    <p class="auth-sub" id="authSub">أنشئي حسابكِ أول مرة، ثم افتحي الكراسة بالبريد وكلمة المرور.</p>
+
+    <!-- إنشاء الحساب لأول مرة -->
+    <form id="setupForm" class="is-hidden" novalidate>
+      <label class="field">
+        <span>البريد الإلكتروني <b class="req">*</b></span>
+        <input type="text" id="suEmail" autocomplete="username" placeholder="مثال: teacher@email.com">
+      </label>
+      <label class="field">
+        <span>كلمة المرور <b class="req">*</b> <small class="hint">4 خانات فأكثر</small></span>
+        <input type="password" id="suPass" autocomplete="new-password" placeholder="••••••">
+      </label>
+      <label class="field">
+        <span>تأكيد كلمة المرور <b class="req">*</b></span>
+        <input type="password" id="suPass2" autocomplete="new-password" placeholder="••••••">
+      </label>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-gold">🔑 إنشاء الحساب والدخول</button>
+      </div>
+    </form>
+
+    <!-- تسجيل الدخول -->
+    <form id="loginForm" class="is-hidden" novalidate>
+      <label class="field">
+        <span>البريد الإلكتروني <b class="req">*</b></span>
+        <input type="text" id="liEmail" autocomplete="username" placeholder="أدخلي بريدكِ الإلكتروني">
+      </label>
+      <label class="field">
+        <span>كلمة المرور <b class="req">*</b></span>
+        <input type="password" id="liPass" autocomplete="current-password" placeholder="••••••">
+      </label>
+      <label class="check-field">
+        <input type="checkbox" id="liRemember">
+        <span>تذكّريني على هذا الجهاز (لا يُطلب الدخول عند كل فتح للمتصفح)</span>
+      </label>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-gold">🔓 دخول</button>
+        <button type="button" class="btn btn-quiet" id="btnForgot">نسيت كلمة المرور؟</button>
+      </div>
+
+      <div id="forgotBox" class="is-hidden">
+        <p class="tiny">بما أن بياناتكِ محفوظة على هذا الجهاز فقط، يمكنكِ إعادة تعيين الحساب واختيار كلمة مرور جديدة
+          <strong>دون حذف تحضيراتكِ وخططكِ وتلاميذكِ</strong>.</p>
+        <div class="form-actions">
+          <button type="button" class="btn btn-outline" id="btnResetAccount">♻️ إعادة تعيين الحساب</button>
+          <button type="button" class="btn btn-quiet" id="btnCancelReset">إلغاء</button>
+        </div>
+      </div>
+    </form>
+
+    <p class="form-error is-hidden" id="authError"></p>
+
+    <p class="auth-note tiny">
+      🔒 <strong>قفل محلي:</strong> الحساب وكلمة المرور يُحفظان على هذا الجهاز فقط (بدون أي خادم).
+      الكراسة محميّة من أ глаз الآخرين على نفس الجهاز، وليس المقصود تشفير ملفاتكِ — لذا احتفظي بنسخة احتياطية منتظمة.
+    </p>
+  </div>
+</div>
+
+<div class="app-shell" id="appShell">
+
+  <!-- ===== الشريط العلوي والتنقل ===== -->
+  <header class="topbar no-print">
+    <div class="brand">
+      <span class="brand-mark">📘</span>
+      <span class="brand-text">
+        <strong>كراسة المعلم الليبي الرقمية</strong>
+        <small>رياضيات المرحلة الإعدادية</small>
+      </span>
+    </div>
+
+    <button type="button" class="btn btn-quiet lock-btn" id="btnLogout" title="قفل الكراسة والخروج">🔒 قفل</button>
+
+    <nav class="main-nav" id="mainNav" aria-label="التنقل الرئيسي">
+      <button type="button" class="nav-btn is-active" data-view="home">🏠 الرئيسية</button>
+      <button type="button" class="nav-btn" data-view="basic-data">🗂️ البيانات الأساسية</button>
+      <button type="button" class="nav-btn" data-view="plans">📅 الخطط السنوية والشهرية والأسبوعية</button>
+      <button type="button" class="nav-btn" data-view="prep">📝 التحضير اليومي</button>
+      <button type="button" class="nav-btn" data-view="activities">🎯 بنك الأنشطة</button>
+      <button type="button" class="nav-btn" data-view="assessment">✅ التقويم والاختبارات</button>
+      <button type="button" class="nav-btn" data-view="students">👥 متابعة التلاميذ</button>
+      <button type="button" class="nav-btn" data-view="differences">🧩 الفروق الفردية</button>
+      <button type="button" class="nav-btn" data-view="notes">📔 الملاحظات</button>
+    </nav>
+  </header>
+
+  <main class="content">
+
+    <!-- ============ الرئيسية ============ -->
+    <section id="view-home" class="view is-active">
+      <div class="hero">
+        <div class="hero-ornament" aria-hidden="true">✦ ✦ ✦</div>
+        <h1>كراسة المعلم الليبي الرقمية</h1>
+        <p class="hero-sub">رياضيات المرحلة الإعدادية</p>
+        <p class="hero-desc">مساحة عملك الرقمية لتنظيم التحضير اليومي، وإدارة خططك التعليمية، ومتابعة تلاميذك في مكان واحد.</p>
+        <div class="hero-actions">
+          <button type="button" class="btn btn-gold" data-goto="prep">✍️ ابدئي تحضير درس اليوم</button>
+          <button type="button" class="btn btn-ghost" data-goto="basic-data">🗂️ أدخلي بياناتك الأساسية</button>
+        </div>
+      </div>
+
+      <div class="home-status">
+        <div class="status-card status-ready">
+          <h3>✅ يعمل الآن في هذه النسخة (الأولى)</h3>
+          <ul>
+            <li>الصفحة الرئيسية والتنقل بين الأقسام.</li>
+            <li>البيانات الأساسية (اسم المعلمة، المدرسة، الصف…).</li>
+            <li>تحضير الدرس اليومي: إنشاء، تعديل، حذف، بحث، حفظ محلي، وطباعة A4.</li>
+            <li>دفتر الملاحظات: إنشاء، تعديل، حذف، وبحث.</li>
+            <li>بنك الأنشطة: تصنيف، بحث، تعديل، حذف، وطباعة.</li>
+            <li>التقويم والاختبارات: بنك أسئلة بالدرجات وطباعة ورقة اختبار A4.</li>
+            <li>الخطط الأسبوعية (5 حصص) والشهرية والسنوية، مع تعبئة تلقائية وطباعة جدول A4.</li>
+            <li>متابعة التلاميذ: قائمة التلاميذ، الدرجات، الحضور، وطباعة الكشفين A4.</li>
+            <li>الفروق الفردية: ملف لكل تلميذ (القوة، الاحتياج، خطة التكيف) وطباعة البطاقة A4.</li>
+            <li>شاشة دخول بالبريد الإلكتروني وكلمة المرور، مع «تذكّريني» وطريقة استرجاع آمنة.</li>
+            <li>تصدير واستيراد نسخة احتياطية من بياناتك.</li>
+          </ul>
+        </div>
+        <div class="status-card status-soon">
+          <h3>⏳ قيد التطوير في نسخة لاحقة</h3>
+          <ul>
+            <li>دمج النسخ الاحتياطية بدل استبدالها.</li>
+            <li>طباعة دفتر الملاحظات.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="quick-grid">
+        <button type="button" class="quick-card" data-goto="basic-data">
+          <span class="quick-icon">🗂️</span>
+          <span class="quick-title">البيانات الأساسية</span>
+          <span class="quick-desc">بيانات المعلمة والمدرسة والصف</span>
+        </button>
+        <button type="button" class="quick-card" data-goto="prep">
+          <span class="quick-icon">📝</span>
+          <span class="quick-title">التحضير اليومي</span>
+          <span class="quick-desc">تحضير الدرس، البحث، الطباعة</span>
+        </button>
+        <button type="button" class="quick-card" data-goto="plans">
+          <span class="quick-icon">📅</span>
+          <span class="quick-title">الخطط</span>
+          <span class="quick-desc">السنوية والشهرية والأسبوعية</span>
+        </button>
+        <button type="button" class="quick-card" data-goto="activities">
+          <span class="quick-icon">🎯</span>
+          <span class="quick-title">بنك الأنشطة</span>
+          <span class="quick-desc">أنشطة رياضيات جاهزة</span>
+        </button>
+        <button type="button" class="quick-card" data-goto="assessment">
+          <span class="quick-icon">✅</span>
+          <span class="quick-title">التقويم والاختبارات</span>
+          <span class="quick-desc">أسئلة ومواصفات اختبارات</span>
+        </button>
+        <button type="button" class="quick-card" data-goto="students">
+          <span class="quick-icon">👥</span>
+          <span class="quick-title">متابعة التلاميذ</span>
+          <span class="quick-desc">سجل الحضور والتقدّم</span>
+        </button>
+        <button type="button" class="quick-card" data-goto="differences">
+          <span class="quick-icon">🧩</span>
+          <span class="quick-title">الفروق الفردية</span>
+          <span class="quick-desc">احتياجات كل تلميذ</span>
+        </button>
+        <button type="button" class="quick-card" data-goto="notes">
+          <span class="quick-icon">📔</span>
+          <span class="quick-title">الملاحظات</span>
+          <span class="quick-desc">ملاحظاتك اليومية الحرة</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============ البيانات الأساسية ============ -->
+    <section id="view-basic-data" class="view">
+      <div class="section-head">
+        <h2>🗂️ البيانات الأساسية</h2>
+        <p>تُحفظ هذه البيانات في متصفحك، وتُستخدم تلقائيًا لملء حقول التحضير وترويسة الطباعة.</p>
+      </div>
+
+      <div class="card">
+        <form id="basicForm" novalidate>
+          <div class="grid-2">
+            <label class="field">
+              <span>اسم المعلمة / المعلم</span>
+              <input type="text" id="bdTeacher" placeholder="مثال: أ. فاطمة علي">
+            </label>
+            <label class="field">
+              <span>اسم المدرسة</span>
+              <input type="text" id="bdSchool" placeholder="مثال: مدرسة النصر الإعدادية للبنات">
+            </label>
+            <label class="field">
+              <span>المادة</span>
+              <input type="text" id="bdSubject" value="الرياضيات">
+            </label>
+            <label class="field">
+              <span>الصف / الشعبة</span>
+              <input type="text" id="bdGrade" placeholder="مثال: الصف الأول الإعدادي - شعبة 2">
+            </label>
+            <label class="field">
+              <span>السنة الدراسية</span>
+              <input type="text" id="bdYear" placeholder="مثال: 2025 / 2026">
+            </label>
+            <label class="field">
+              <span>الحلقة / المرحلة</span>
+              <input type="text" id="bdStage" value="المرحلة الإعدادية">
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-gold">💾 حفظ البيانات</button>
+            <button type="button" class="btn btn-quiet" id="bdClear">مسح الحقول</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="notice">
+        <strong>ملاحظة عن الحفظ:</strong>
+        تُحفظ البيانات في <em>متصفح هذا الجهاز فقط</em>. لن تظهر على جهاز آخر، وتُمحى إذا حذفتِ بيانات المتصفح.
+      </div>
+    </section>
+
+    <!-- ============ التحضير اليومي ============ -->
+    <section id="view-prep" class="view">
+      <div class="section-head">
+        <h2>📝 التحضير اليومي</h2>
+        <p>أنشئي تحضير الدرس، احفظيه محليًا، ابحثي عنه، عدّليه، أو اطبعيه بتنسيق A4.</p>
+      </div>
+
+      <div class="toolbar no-print">
+        <button type="button" class="btn btn-gold" id="btnNewPrep">＋ تحضير جديد</button>
+        <div class="search-box">
+          <input type="search" id="prepSearch" placeholder="🔍 بحث بالعنوان أو الصف أو التاريخ…">
+        </div>
+      </div>
+
+      <!-- النموذج -->
+      <div class="card form-card is-hidden" id="prepFormCard">
+        <div class="card-head">
+          <h3 id="prepFormTitle">تحضير جديد</h3>
+          <button type="button" class="btn btn-quiet" id="btnCancelPrep">إغلاق</button>
+        </div>
+
+        <form id="prepForm" novalidate>
+          <input type="hidden" id="prepId">
+
+          <div class="grid-3">
+            <label class="field">
+              <span>الصف والشعبة <b class="req">*</b></span>
+              <input type="text" id="prepGrade" placeholder="الصف الأول الإعدادي - شعبة 2" required>
+            </label>
+            <label class="field">
+              <span>التاريخ <b class="req">*</b></span>
+              <input type="date" id="prepDate" required>
+            </label>
+            <label class="field">
+              <span>عنوان الدرس <b class="req">*</b></span>
+              <input type="text" id="prepTitle" placeholder="مثال: الكسور العشرية" required>
+            </label>
+          </div>
+
+          <fieldset class="group">
+            <legend>🎯 الأهداف</legend>
+            <label class="field">
+              <span>الأهداف المعرفية</span>
+              <textarea id="prepCognitive" rows="2" placeholder="أن يعرّف… / أن يوضّح… / أن يستنتج…"></textarea>
+            </label>
+            <label class="field">
+              <span>الأهداف المهارية</span>
+              <textarea id="prepSkill" rows="2" placeholder="أن يحلّ… / أن يرسم… / أن يستخدم…"></textarea>
+            </label>
+            <label class="field">
+              <span>الأهداف الوجدانية</span>
+              <textarea id="prepAffective" rows="2" placeholder="أن يقدّر… / أن يتعاون… / أن يتحمّل…"></textarea>
+            </label>
+          </fieldset>
+
+          <div class="grid-2">
+            <label class="field">
+              <span>🌟 التمهيد</span>
+              <textarea id="prepIntro" rows="3" placeholder="نشاط قصير لجذب الانتباه وربط الدرس السابق…"></textarea>
+            </label>
+            <label class="field">
+              <span>🧰 الوسائل والوسائل التعليمية</span>
+              <textarea id="prepTools" rows="3" placeholder="السبورة، الكتاب المدرسي، جدول الضرب، أوراق عمل…"></textarea>
+            </label>
+          </div>
+
+          <label class="field">
+            <span>🧭 استراتيجيات التدريس</span>
+            <textarea id="prepStrategies" rows="2" placeholder="التعلم التعاوني، العصف الذهني، حل المشكلات، الاستقصاء…"></textarea>
+          </label>
+
+          <label class="field">
+            <span>👣 خطوات الدرس <small class="hint">اكتب كل خطوة في سطر مستقل</small></span>
+            <textarea id="prepSteps" rows="6" placeholder="1️⃣ عرض الهدف…&#10;2️⃣ التمهيد…&#10;3️⃣ الشرح مع أمثلة…&#10;4️⃣ تطبيقات صفية…&#10;5️⃣ الختام والواجب…"></textarea>
+          </label>
+
+          <div class="grid-2">
+            <label class="field">
+              <span>📊 التقويم</span>
+              <textarea id="prepAssessment" rows="3" placeholder="أسئلة شفوية، ورقة عمل، تقويم ختامي…"></textarea>
+            </label>
+            <label class="field">
+              <span>🏠 الواجب المنزلي</span>
+              <textarea id="prepHomework" rows="3" placeholder="التمارين رقم… ص…"></textarea>
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-gold">💾 حفظ التحضير</button>
+            <button type="button" class="btn btn-quiet" id="btnResetPrep">تفريغ الحقول</button>
+          </div>
+          <p class="form-error is-hidden" id="prepError"></p>
+        </form>
+      </div>
+
+      <!-- قائمة التحضيرات -->
+      <div class="card">
+        <div class="card-head">
+          <h3>التحضيرات المحفوظة <span class="count" id="prepCount">0</span></h3>
+        </div>
+        <div id="prepList" class="prep-list"></div>
+        <p class="empty is-hidden" id="prepEmpty">
+          لا توجد تحضيرات محفوظة بعد. اضغطي <strong>＋ تحضير جديد</strong> للبدء.
+        </p>
+      </div>
+
+      <!-- النسخ الاحتياطي -->
+      <div class="card">
+        <div class="card-head">
+          <h3>🔒 النسخ الاحتياطي للبيانات</h3>
+        </div>
+        <p class="backup-desc">
+          لأن الحفظ محلي في المتصفح، ننصحكِ باقتطاع نسخة احتياطية بين الحين والحين.
+          الملف الذي يُنزَّل يحتوي على بياناتك الأساسية وتحضيراتك، ويمكنكِ استعادته على أي جهاز.
+        </p>
+        <div class="form-actions">
+          <button type="button" class="btn btn-gold" id="btnExport">⬇️ تصدير نسخة احتياطية</button>
+          <label class="btn btn-outline upload-label" for="importFile">⬆️ استيراد نسخة احتياطية</label>
+          <input type="file" id="importFile" accept=".json,application/json">
+        </div>
+        <p class="tiny" id="backupStatus"></p>
+      </div>
+
+      <div class="notice notice-warn">
+        <strong>حدود الحفظ المحلي (مهم):</strong>
+        التحضيرات تُحفظ في <em>متصفح هذا الجهاز فقط</em> عبر تقنية اسمها Local Storage.
+        <ul>
+          <li>لا تُحفظ على خادم، ولا يمكن الوصول إليها من جهاز آخر.</li>
+          <li>مسح «بيانات المتصفح» أو استخدام وضع التصفح الخاص قد يؤدي لفقدانها.</li>
+          <li>المساحة المتاحة محدودة (نحو 5 ميغابايت للنطاق كله)، ويكفي لمئات التحضيرات.</li>
+          <li>نصيحة: اطبعي التحضيرات المهمة أو احتفظي بنسخة منها خارج المتصفح.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ أقسام قيد التطوير ============ -->
+    <section id="view-plans" class="view">
+      <div class="section-head">
+        <h2>📅 الخطط السنوية والشهرية والأسبوعية</h2>
+        <p>خطة الأسبوع: 5 أيام (الأحد – الخميس) بحصة واحدة كل يوم · خطة الشهر: أسابيعه · الخطة السنوية: أشهر السنة الدراسية.</p>
+      </div>
+
+      <div class="toolbar no-print">
+        <button type="button" class="btn btn-gold" id="btnNewPlan">＋ خطة جديدة</button>
+        <div class="search-box">
+          <input type="search" id="planSearch" placeholder="🔍 بحث بالعنوان أو الصف أو الموضوع…">
+        </div>
+        <label class="field filter-field">
+          <span>النوع</span>
+          <select id="planFilter">
+            <option value="">الكل</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="card form-card is-hidden" id="planFormCard">
+        <div class="card-head">
+          <h3 id="planFormTitle">خطة جديدة</h3>
+          <button type="button" class="btn btn-quiet" id="btnCancelPlan">إغلاق</button>
+        </div>
+
+        <form id="planForm" novalidate>
+          <input type="hidden" id="planId">
+
+          <div class="grid-3">
+            <label class="field">
+              <span>نوع الخطة</span>
+              <select id="planType"></select>
+            </label>
+            <label class="field">
+              <span>عنوان الخطة <b class="req">*</b></span>
+              <input type="text" id="planTitle" placeholder="مثال: خطة الأسبوع الرابع">
+            </label>
+            <label class="field">
+              <span>الصف والشعبة <b class="req">*</b></span>
+              <input type="text" id="planGrade" placeholder="الصف الأول الإعدادي - شعبة 2">
+            </label>
+            <label class="field">
+              <span>الفترة <small class="hint">مثال: الأسبوع من 11/10/2026 أو شهر أكتوبر</small></span>
+              <input type="text" id="planPeriod" placeholder="الفترة التي تغطيها الخطة">
+            </label>
+          </div>
+
+          <div class="questions-box">
+            <div class="card-head">
+              <h3>📋 بنود الخطة <span class="count" id="planRowCount">0</span></h3>
+              <div class="form-actions">
+                <button type="button" class="btn btn-outline" id="btnAutoFillPlan">🗓️ تعبئة تلقائية</button>
+                <button type="button" class="btn btn-outline" id="btnAddPlanRow">＋ إضافة بند</button>
+              </div>
+            </div>
+            <p class="tiny auto-hint" id="planAutoHint"></p>
+
+            <div class="q-head plan-head" aria-hidden="true">
+              <span>اليوم / الفترة</span><span>الموضوع / الدرس</span><span>ملاحظات</span><span></span>
+            </div>
+
+            <div id="planRows"></div>
+            <p class="empty is-hidden" id="planRowsEmpty">لم تُضفِ بنودًا بعد. استخدمي <strong>🗓️ تعبئة تلقائية</strong> أو <strong>＋ إضافة بند</strong>.</p>
+          </div>
+
+          <label class="field">
+            <span>ملاحظات عامة على الخطة <small class="hint">اختياري</small></span>
+            <textarea id="planNotes" rows="2" placeholder="أهداف عامة، روابط مع الوحدات السابقة…"></textarea>
+          </label>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-gold">💾 حفظ الخطة</button>
+            <button type="button" class="btn btn-quiet" id="btnResetPlan">تفريغ الحقول</button>
+          </div>
+          <p class="form-error is-hidden" id="planError"></p>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3>الخطط المحفوظة <span class="count" id="planCount">0</span></h3>
+        </div>
+        <div id="planList" class="prep-list"></div>
+        <p class="empty is-hidden" id="planEmpty">لا توجد خطط محفوظة بعد. اضغطي <strong>＋ خطة جديدة</strong> للبدء.</p>
+      </div>
+
+      <div class="notice">
+        <strong>تنبيه:</strong> الخطط تُحفظ في متصفح هذا الجهاز فقط. استخدمي زر
+        <strong>⬇️ تصدير نسخة احتياطية</strong> في قسم التحضير اليومي لحمايتها من الضياع.
+      </div>
+    </section>
+
+    <section id="view-activities" class="view">
+      <div class="section-head">
+        <h2>🎯 بنك الأنشطة</h2>
+        <p>احفظي أنشطة الرياضيات المجرّبة وصفيًا، وصنّفيها، وابحثي عنها، واطبعيها في أي وقت.</p>
+      </div>
+
+      <div class="toolbar no-print">
+        <button type="button" class="btn btn-gold" id="btnNewActivity">＋ نشاط جديد</button>
+        <div class="search-box">
+          <input type="search" id="activitySearch" placeholder="🔍 بحث بالعنوان أو وصف النشاط…">
+        </div>
+        <label class="field filter-field">
+          <span>التصنيف</span>
+          <select id="activityFilter">
+            <option value="">الكل</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="card form-card is-hidden" id="activityFormCard">
+        <div class="card-head">
+          <h3 id="activityFormTitle">نشاط جديد</h3>
+          <button type="button" class="btn btn-quiet" id="btnCancelActivity">إغلاق</button>
+        </div>
+
+        <form id="activityForm" novalidate>
+          <input type="hidden" id="activityId">
+
+          <div class="grid-2">
+            <label class="field">
+              <span>عنوان النشاط <b class="req">*</b></span>
+              <input type="text" id="activityTitle" placeholder="مثال: سباق الكسور">
+            </label>
+            <label class="field">
+              <span>التصنيف</span>
+              <select id="activityCategory"></select>
+            </label>
+            <label class="field">
+              <span>الصف الدراسي</span>
+              <select id="activityGrade">
+                <option value="الكل">مناسب لجميع الصفوف</option>
+                <option value="الصف الأول الإعدادي">الصف الأول الإعدادي</option>
+                <option value="الصف الثاني الإعدادي">الصف الثاني الإعدادي</option>
+                <option value="الصف الثالث الإعدادي">الصف الثالث الإعدادي</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>زمن التنفيذ <small class="hint">اختياري</small></span>
+              <input type="text" id="activityDuration" placeholder="مثال: 10 دقائق">
+            </label>
+          </div>
+
+          <label class="field">
+            <span>وصف النشاط والتعليمات <b class="req">*</b></span>
+            <textarea id="activityDesc" rows="5" placeholder="كيف يُنفذ النشاط؟ ما خطواته؟ ما دور التلاميذ؟"></textarea>
+          </label>
+
+          <div class="grid-2">
+            <label class="field">
+              <span>الأدوات والمواد المطلوبة</span>
+              <textarea id="activityTools" rows="3" placeholder="أوراق عمل، بطاقات، مكعبات، سبورة…"></textarea>
+            </label>
+            <label class="field">
+              <span>ملاحظات التقويم <small class="hint">اختياري</small></span>
+              <textarea id="activityNotes" rows="3" placeholder="كيف أتأكد أن النشاط نجح؟"></textarea>
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-gold">💾 حفظ النشاط</button>
+            <button type="button" class="btn btn-quiet" id="btnResetActivity">تفريغ الحقول</button>
+          </div>
+          <p class="form-error is-hidden" id="activityError"></p>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3>الأنشطة المحفوظة <span class="count" id="activityCount">0</span></h3>
+        </div>
+        <div id="activityList" class="prep-list"></div>
+        <p class="empty is-hidden" id="activityEmpty">لا توجد أنشطة محفوظة بعد. اضغطي <strong>＋ نشاط جديد</strong> للبدء.</p>
+      </div>
+
+      <div class="notice">
+        <strong>تنبيه:</strong> الأنشطة تُحفظ في متصفح هذا الجهاز فقط. استخدمي زر
+        <strong>⬇️ تصدير نسخة احتياطية</strong> في قسم التحضير اليومي لحماية أنشطتك من الضياع.
+      </div>
+    </section>
+
+    <section id="view-assessment" class="view">
+      <div class="section-head">
+        <h2>✅ التقويم والاختبارات</h2>
+        <p>حضّري أسئلة اختباراتك بدرجاتها، واحفظيها، واطبعيها ورقة اختبار جاهزة بمقاس A4.</p>
+      </div>
+
+      <div class="toolbar no-print">
+        <button type="button" class="btn btn-gold" id="btnNewTest">＋ اختبار / تقويم جديد</button>
+        <div class="search-box">
+          <input type="search" id="testSearch" placeholder="🔍 بحث بالعنوان أو الصف…">
+        </div>
+        <label class="field filter-field">
+          <span>النوع</span>
+          <select id="testFilter">
+            <option value="">الكل</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="card form-card is-hidden" id="testFormCard">
+        <div class="card-head">
+          <h3 id="testFormTitle">اختبار جديد</h3>
+          <button type="button" class="btn btn-quiet" id="btnCancelTest">إغلاق</button>
+        </div>
+
+        <form id="testForm" novalidate>
+          <input type="hidden" id="testId">
+
+          <div class="grid-3">
+            <label class="field">
+              <span>عنوان الاختبار / التقويم <b class="req">*</b></span>
+              <input type="text" id="testTitle" placeholder="مثال: اختبار الوحدة الثانية">
+            </label>
+            <label class="field">
+              <span>الصف والشعبة <b class="req">*</b></span>
+              <input type="text" id="testGrade" placeholder="الصف الأول الإعدادي - شعبة 2">
+            </label>
+            <label class="field">
+              <span>نوع التقويم</span>
+              <select id="testType"></select>
+            </label>
+            <label class="field">
+              <span>التاريخ</span>
+              <input type="date" id="testDate">
+            </label>
+            <label class="field">
+              <span>زمن الاختبار <small class="hint">اختياري</small></span>
+              <input type="text" id="testDuration" placeholder="مثال: 45 دقيقة">
+            </label>
+            <label class="field">
+              <span>الدرجة الكلية</span>
+              <input type="text" id="testTotal" readonly placeholder="تُحسب تلقائيًا من درجات الأسئلة">
+            </label>
+          </div>
+
+          <label class="field">
+            <span>تعليمات عامة للاختبار <small class="hint">اختياري</small></span>
+            <textarea id="testInstructions" rows="2" placeholder="أجب عن جميع الأسئلة، واكتب اسمك وشعبةك في أعلى الورقة…"></textarea>
+          </label>
+
+          <div class="questions-box">
+            <div class="card-head">
+              <h3>📝 الأسئلة <span class="count" id="questionCount">0</span></h3>
+              <button type="button" class="btn btn-outline" id="btnAddQuestion">＋ إضافة سؤال</button>
+            </div>
+
+            <div class="q-head" aria-hidden="true">
+              <span>#</span><span>نص السؤال</span><span>نوع السؤال</span><span>الدرجة</span><span></span>
+            </div>
+
+            <div id="questionRows"></div>
+            <p class="empty is-hidden" id="questionsEmpty">لم تُضفِ أسئلة بعد. اضغطي <strong>＋ إضافة سؤال</strong>.</p>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-gold">💾 حفظ الاختبار</button>
+            <button type="button" class="btn btn-quiet" id="btnResetTest">تفريغ الحقول</button>
+          </div>
+          <p class="form-error is-hidden" id="testError"></p>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3>الاختبارات المحفوظة <span class="count" id="testCount">0</span></h3>
+        </div>
+        <div id="testList" class="prep-list"></div>
+        <p class="empty is-hidden" id="testEmpty">لا توجد اختبارات محفوظة بعد. اضغطي <strong>＋ اختبار / تقويم جديد</strong> للبدء.</p>
+      </div>
+
+      <div class="notice">
+        <strong>تنبيه:</strong> الاختبارات تُحفظ في متصفح هذا الجهاز فقط. استخدمي زر
+        <strong>⬇️ تصدير نسخة احتياطية</strong> في قسم التحضير اليومي لحمايتها من الضياع.
+      </div>
+    </section>
+
+    <section id="view-students" class="view">
+      <div class="section-head">
+        <h2>👥 متابعة التلاميذ</h2>
+        <p>سجل تلاميذك: بيانات كل تلميذ، درجاته في التقويمات، وحضوره — مع طباعة كشف الدرجات وكشف الحضور A4.</p>
+      </div>
+
+      <div class="toolbar no-print">
+        <button type="button" class="btn btn-gold" id="btnNewStudent">＋ تلميذ جديد</button>
+        <div class="search-box">
+          <input type="search" id="studentSearch" placeholder="🔍 بحث باسم التلميذ أو رقم القيد…">
+        </div>
+        <label class="field filter-field">
+          <span>الصف</span>
+          <select id="studentFilter">
+            <option value="">الكل</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="card form-card is-hidden" id="studentFormCard">
+        <div class="card-head">
+          <h3 id="studentFormTitle">تلميذ جديد</h3>
+          <button type="button" class="btn btn-quiet" id="btnCancelStudent">إغلاق</button>
+        </div>
+
+        <form id="studentForm" novalidate>
+          <input type="hidden" id="studentId">
+
+          <div class="grid-3">
+            <label class="field">
+              <span>اسم التلميذ <b class="req">*</b></span>
+              <input type="text" id="studentName" placeholder="مثال: محمد علي أحمد">
+            </label>
+            <label class="field">
+              <span>رقم القيد <small class="hint">اختياري</small></span>
+              <input type="text" id="studentSerial" placeholder="مثال: 14">
+            </label>
+            <label class="field">
+              <span>الصف والشعبة <b class="req">*</b></span>
+              <input type="text" id="studentGrade" placeholder="الصف الأول الإعدادي - شعبة 2">
+            </label>
+            <label class="field">
+              <span>ملاحظة سريعة <small class="hint">اختياري</small></span>
+              <input type="text" id="studentNote" placeholder="مثال: يحتاج متابعة في الواجبات">
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-gold">💾 حفظ التلميذ</button>
+            <button type="button" class="btn btn-quiet" id="btnResetStudent">تفريغ الحقول</button>
+          </div>
+          <p class="form-error is-hidden" id="studentError"></p>
+        </form>
+      </div>
+
+      <div class="card is-hidden" id="studentPanel">
+        <div class="card-head">
+          <h3 id="studentPanelTitle">سجل التلميذ</h3>
+          <div class="form-actions">
+            <button type="button" class="btn btn-outline" id="btnPrintGrades">🖨️ كشف الدرجات</button>
+            <button type="button" class="btn btn-outline" id="btnPrintAttendance">🖨️ كشف الحضور</button>
+            <button type="button" class="btn btn-quiet" id="btnClosePanel">إغلاق</button>
+          </div>
+        </div>
+
+        <div class="grid-2 panel-grid">
+          <div class="sub-panel">
+            <h4 class="sub-panel-title">📊 الدرجات <span class="count" id="gradeCount">0</span></h4>
+            <form id="gradeForm" novalidate>
+              <div class="grid-3">
+                <label class="field">
+                  <span>اسم التقويم / الاختبار <b class="req">*</b></span>
+                  <input type="text" id="gradeExam" placeholder="مثال: اختبار الوحدة الأولى">
+                </label>
+                <label class="field">
+                  <span>الدرجة <b class="req">*</b></span>
+                  <input type="number" id="gradeDegree" min="0" step="0.5" placeholder="مثال: 17">
+                </label>
+                <label class="field">
+                  <span>من أصل</span>
+                  <input type="number" id="gradeMax" min="1" step="1" value="20">
+                </label>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-gold">＋ إضافة درجة</button>
+              </div>
+              <p class="form-error is-hidden" id="gradeError"></p>
+            </form>
+            <div id="gradeList" class="mini-list"></div>
+            <p class="empty is-hidden" id="gradeEmpty">لا توجد درجات مسجلة لهذا التلميذ بعد.</p>
+          </div>
+
+          <div class="sub-panel">
+            <h4 class="sub-panel-title">🗓️ الحضور والغياب <span class="count" id="attCount">0</span></h4>
+            <form id="attForm" novalidate>
+              <div class="grid-3">
+                <label class="field">
+                  <span>التاريخ <b class="req">*</b></span>
+                  <input type="date" id="attDate">
+                </label>
+                <label class="field">
+                  <span>الحالة</span>
+                  <select id="attStatus">
+                    <option>حاضر</option>
+                    <option>غائب</option>
+                    <option>متأخر</option>
+                    <option>مستأذن</option>
+                  </select>
+                </label>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-gold">＋ تسجيل الحالة</button>
+              </div>
+              <p class="form-error is-hidden" id="attError"></p>
+            </form>
+            <div id="attList" class="mini-list"></div>
+            <p class="empty is-hidden" id="attEmpty">لا توجد سجلات حضور لهذا التلميذ بعد.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3>قائمة التلاميذ <span class="count" id="studentCount">0</span></h3>
+        </div>
+        <div id="studentList" class="prep-list"></div>
+        <p class="empty is-hidden" id="studentEmpty">لا يوجد تلاميذ بعد. اضغطي <strong>＋ تلميذ جديد</strong> للبدء.</p>
+      </div>
+
+      <div class="notice">
+        <strong>تنبيه:</strong> بيانات التلاميذ والدرجات والحضور تُحفظ في متصفح هذا الجهاز فقط. استخدمي زر
+        <strong>⬇️ تصدير نسخة احتياطية</strong> في قسم التحضير اليومي لحمايتها من الضياع.
+      </div>
+    </section>
+
+    <section id="view-differences" class="view">
+      <div class="section-head">
+        <h2>🧩 الفروق الفردية</h2>
+        <p>ملف فردي لكل تلميذ: نقاط قوته، احتياجاته، وخطة التكيف معه — مع طباعة البطاقة A4.</p>
+      </div>
+
+      <div class="toolbar no-print">
+        <button type="button" class="btn btn-gold" id="btnNewDiff">＋ ملف فروق فردية</button>
+        <div class="search-box">
+          <input type="search" id="diffSearch" placeholder="🔍 بحث باسم التلميذ…">
+        </div>
+        <label class="field filter-field">
+          <span>المستوى</span>
+          <select id="diffFilter">
+            <option value="">الكل</option>
+            <option value="متقدم">متقدم</option>
+            <option value="ضمن المستوى">ضمن المستوى</option>
+            <option value="يحتاج دعمًا">يحتاج دعمًا</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="card form-card is-hidden" id="diffFormCard">
+        <div class="card-head">
+          <h3 id="diffFormTitle">ملف فروق فردية جديد</h3>
+          <button type="button" class="btn btn-quiet" id="btnCancelDiff">إغلاق</button>
+        </div>
+
+        <form id="diffForm" novalidate>
+          <input type="hidden" id="diffId">
+
+          <div class="grid-3">
+            <label class="field">
+              <span>اسم التلميذ <b class="req">*</b></span>
+              <input type="text" id="diffStudent" list="studentNames" placeholder="اكتب الاسم أو اختاريه من قائمتك">
+            </label>
+            <label class="field">
+              <span>المستوى العام <b class="req">*</b></span>
+              <select id="diffLevel">
+                <option value="متقدم">متقدم (فوق المستوى)</option>
+                <option value="ضمن المستوى">ضمن المستوى المتوقع</option>
+                <option value="يحتاج دعمًا">يحتاج دعمًا</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>تاريخ الملاحظة</span>
+              <input type="date" id="diffDate">
+            </label>
+          </div>
+
+          <label class="field">
+            <span>نقاط القوة <b class="req">*</b> <small class="hint">ما يجيده التلميذ</small></span>
+            <textarea id="diffStrengths" rows="3" placeholder="مثال: سريع الحساب، متعاون مع زملائه، يشارك بثقة…"></textarea>
+          </label>
+
+          <label class="field">
+            <span>نقاط الضعف / الاحتياجات <b class="req">*</b> <small class="hint">ما يحتاج إليه</small></span>
+            <textarea id="diffNeeds" rows="3" placeholder="مثال: يخطئ في المسائل اللفظية، يحتاج تدريبًا على القراءة البصرية للرموز…"></textarea>
+          </label>
+
+          <label class="field">
+            <span>خطة التكيف وأنشطة مقترحة <b class="req">*</b></span>
+            <textarea id="diffPlan" rows="3" placeholder="مثال: مجموعات صغيرة، أسئلة مبسطة، أوراق عمل متدرجة، متابعة أسبوعية…"></textarea>
+          </label>
+
+          <label class="field">
+            <span>ملاحظات إضافية <small class="hint">اختياري</small></span>
+            <textarea id="diffNote" rows="2" placeholder="أي ملاحظات أخرى على التلميذ…"></textarea>
+          </label>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-gold">💾 حفظ الملف</button>
+            <button type="button" class="btn btn-quiet" id="btnResetDiff">تفريغ الحقول</button>
+          </div>
+          <p class="form-error is-hidden" id="diffError"></p>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3>الملفات المحفوظة <span class="count" id="diffCount">0</span></h3>
+        </div>
+        <div id="diffList" class="prep-list"></div>
+        <p class="empty is-hidden" id="diffEmpty">لا توجد ملفات فروق فردية بعد. اضغطي <strong>＋ ملف فروق فردية</strong> للبدء.</p>
+      </div>
+
+      <div class="notice">
+        <strong>تنبيه:</strong> الملفات تُحفظ في متصفح هذا الجهاز فقط. استخدمي زر
+        <strong>⬇️ تصدير نسخة احتياطية</strong> في قسم التحضير اليومي لحمايتها من الضياع.
+      </div>
+
+      <datalist id="studentNames"></datalist>
+    </section>
+
+    <section id="view-notes" class="view">
+      <div class="section-head">
+        <h2>📔 الملاحظات</h2>
+        <p>دفتر ملاحظاتك الحر: مواقف صفية، تذكيرات، أو ملاحظات على التلاميذ — تُحفظ محليًا في متصفحك.</p>
+      </div>
+
+      <div class="toolbar no-print">
+        <button type="button" class="btn btn-gold" id="btnNewNote">＋ ملاحظة جديدة</button>
+        <div class="search-box">
+          <input type="search" id="noteSearch" placeholder="🔍 بحث في العنوان أو النص…">
+        </div>
+      </div>
+
+      <div class="card form-card is-hidden" id="noteFormCard">
+        <div class="card-head">
+          <h3 id="noteFormTitle">ملاحظة جديدة</h3>
+          <button type="button" class="btn btn-quiet" id="btnCancelNote">إغلاق</button>
+        </div>
+
+        <form id="noteForm" novalidate>
+          <input type="hidden" id="noteId">
+          <label class="field">
+            <span>عنوان الملاحظة <b class="req">*</b></span>
+            <input type="text" id="noteTitle" placeholder="مثال: ملاحظة على أداء شعبة 2">
+          </label>
+          <label class="field">
+            <span>نص الملاحظة <b class="req">*</b></span>
+            <textarea id="noteBody" rows="6" placeholder="اكتبي ملاحظتك هنا…"></textarea>
+          </label>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-gold">💾 حفظ الملاحظة</button>
+            <button type="button" class="btn btn-quiet" id="btnResetNote">تفريغ الحقول</button>
+          </div>
+          <p class="form-error is-hidden" id="noteError"></p>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3>الملاحظات المحفوظة <span class="count" id="noteCount">0</span></h3>
+        </div>
+        <div id="noteList" class="prep-list"></div>
+        <p class="empty is-hidden" id="noteEmpty">لا توجد ملاحظات محفوظة بعد. اضغطي <strong>＋ ملاحظة جديدة</strong> للبدء.</p>
+      </div>
+
+      <div class="notice">
+        <strong>تنبيه:</strong> الملاحظات تُحفظ في متصفح هذا الجهاز فقط، تمامًا كالتحضيرات.
+        استخدمي <strong>النسخ الاحتياطي</strong> في قسم التحضير اليومي للاحتفاظ بنسخة خارج المتصفح.
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="app-footer no-print">
+    <p>كراسة المعلم الليبي الرقمية – رياضيات المرحلة الإعدادية · نسخة أولى تجريبية</p>
+    <p class="tiny">الحفظ محلي في المتصفح · بدون خوادم مدفوعة · بدون قواعد بيانات خارجية</p>
+  </footer>
+</div>
+
+<!-- منطقة الطباعة A4: تُملأ عند الضغط على زر الطباعة وتظهر في الورق فقط -->
+<div id="printArea" aria-hidden="true"></div>
+
+<div id="toast" class="toast no-print" role="status" aria-live="polite"></div>
+
+<script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+# ملفات نظام التشغيل (ليست جزءًا من المشروع)
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# ملفات المحررات
+.vscode/
+.idea/
+*.swp
