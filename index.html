@@ -9,6 +9,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+
+  <!-- ===== تثبيت التطبيق على الهاتف/الجهاز (PWA) ===== -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#0b1a35">
+  <link rel="icon" type="image/png" href="icons/favicon.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="كراسة المعلم">
 </head>
 <body class="auth-locked">
 
@@ -122,6 +132,7 @@
         <div class="hero-actions">
           <button type="button" class="btn btn-gold" data-goto="prep">✍️ ابدئي تحضير درس اليوم</button>
           <button type="button" class="btn btn-ghost" data-goto="basic-data">🗂️ أدخلي بياناتك الأساسية</button>
+          <a class="btn btn-outline" href="install.html">📱 تثبيت التطبيق على هاتفك</a>
         </div>
       </div>
 

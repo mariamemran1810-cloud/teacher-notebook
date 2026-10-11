@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b1a35">
+  <title>تثبيت التطبيق على جهازك – كراسة المعلم الليبي الرقمية</title>
+  <link rel="icon" type="image/png" href="icons/favicon.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <style>
+    :root {
+      --navy-900: #0b1a35; --navy-800: #0f2350; --navy-700: #16305f;
+      --gold-500: #c9a227; --gold-400: #d9b84c;
+      --ivory-100: #fdfaf3; --ivory-200: #f7f1e3;
+      --ink: #1d2433; --muted: #6b7280;
+      --radius: 16px;
+      --font: "Cairo", "Segoe UI", Tahoma, "Sakkal Majalla", Arial, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font); color: var(--ink); line-height: 1.9;
+      background:
+        radial-gradient(1000px 460px at 90% -8%, rgba(201, 162, 39, .16), transparent 60%),
+        linear-gradient(180deg, var(--ivory-100), var(--ivory-200));
+      min-height: 100vh; padding-bottom: 40px;
+    }
+    header {
+      background: linear-gradient(135deg, var(--navy-900), var(--navy-700));
+      color: #fff; padding: 34px 18px 40px; text-align: center;
+      border-bottom: 4px solid var(--gold-500);
+    }
+    header .back {
+      display: inline-block; color: var(--gold-400); text-decoration: none;
+      font-weight: 700; margin-bottom: 14px;
+    }
+    header h1 { font-size: clamp(22px, 4vw, 32px); margin-bottom: 8px; }
+    header p { color: #d8e2f2; max-width: 640px; margin: 0 auto; font-size: 15px; }
+    .wrap { max-width: 820px; margin: -22px auto 0; padding: 0 14px; display: grid; gap: 16px; }
+    .card {
+      background: #fff; border-radius: var(--radius); padding: 20px 22px;
+      border: 1px solid rgba(11, 26, 53, .08);
+      box-shadow: 0 10px 30px rgba(11, 26, 53, .10);
+      border-top: 5px solid var(--gold-500);
+    }
+    .card h2 { font-size: 19px; color: var(--navy-800); margin-bottom: 10px; }
+    .card ol { padding-right: 22px; }
+    .card li { margin-bottom: 7px; }
+    .card ul { padding-right: 22px; }
+    .tip {
+      margin-top: 12px; background: var(--ivory-200); border: 1px dashed var(--gold-400);
+      border-radius: 10px; padding: 9px 12px; font-size: 14px; color: #6b5a20;
+    }
+    .btn {
+      display: inline-block; margin-top: 12px; background: linear-gradient(135deg, var(--gold-500), var(--gold-400));
+      color: var(--navy-900); font-weight: 800; font-size: 16px;
+      padding: 12px 26px; border-radius: 12px; text-decoration: none;
+      box-shadow: 0 8px 20px rgba(201, 162, 39, .35);
+    }
+    .btn:hover { filter: brightness(1.05); }
+    .steps-note { font-size: 14px; color: var(--muted); }
+    footer { text-align: center; color: var(--muted); font-size: 13.5px; margin-top: 26px; }
+    @media print {
+      header { background: #fff !important; color: #000; border-bottom: 2px solid #000; }
+      header h1, header p, header .back { color: #000 !important; }
+      .btn { box-shadow: none; border: 1px solid #000; }
+      .card { box-shadow: none; page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="back" href="./">↩️ العودة إلى الكراسة</a>
+  <h1>📱 تثبيت التطبيق على جهازك</h1>
+  <p>ثبّتي كراسة المعلم مرة واحدة، فتظهر أيقونتها على شاشتك وتفتح كتطبيق مستقل — و<b>تعمل بلا إنترنت</b> بعد أول فتح.</p>
+</header>
+
+<main class="wrap">
+
+  <section class="card">
+    <h2>🤖 أندرويد — متصفح Google Chrome</h2>
+    <ol>
+      <li>افتحي رابط الكراسة في متصفح <b>Chrome</b>.</li>
+      <li>اضغطي <b>⋮</b> (النقاط الثلاث في الأعلى) ثم <b>تثبيت التطبيق</b> أو <b>إضافة إلى الشاشة الرئيسية</b>.</li>
+      <li>اضغطي <b>تثبيت / إضافة</b>.</li>
+    </ol>
+    <p class="tip">💡 أحيانًا تظهر نافذة تثبيت تلقائية أول ما تفتحين الرابط — اضغطي «تثبيت» مباشرة.</p>
+  </section>
+
+  <section class="card">
+    <h2>🍎 آيفون وآيباد — متصفح Safari</h2>
+    <ol>
+      <li>افتحي الرابط في متصفح <b>Safari</b>. (متصفح كروم في الآيفون لا يدعم التثبيت)</li>
+      <li>اضغطي زر <b>المشاركة</b> ⬆️ (مربع فيه سهم) أسفل الشاشة.</li>
+      <li>اسحبي القائمة للأعلى واختر <b>إضافة إلى الشاشة الرئيسية</b>.</li>
+      <li>اضغطي <b>إضافة</b> في الأعلى.</li>
+    </ol>
+  </section>
+
+  <section class="card">
+    <h2>🪟 ويندوز — متصفح Edge أو Chrome</h2>
+    <ol>
+      <li>افتحي الرابط في المتصفح.</li>
+      <li>اضغطي أيقونة <b>⬇️ تثبيت</b> في يمين شريط العنوان، أو القائمة <b>⋮</b> ← <b>تطبيقات</b> ← <b>تثبيت هذا الموقع كتطبيق</b>.</li>
+      <li>اضغطي <b>تثبيت</b> — تُضاف الكراسة إلى قائمة ابدأ وسطح المكتب.</li>
+    </ol>
+    <p class="tip">💡 على أندرويد أيضًا تظهر في <b>الإعدادات ← التطبيقات ← تطبيقات الويب</b> لإزالتها لاحقًا.</p>
+  </section>
+
+  <section class="card">
+    <h2>📦 تنزيل نسخة خارجية (ملف ZIP)</h2>
+    <p class="steps-note">للحفظ خارج الإنترنت أو لنقل التطبيق إلى جهاز آخر: حمّلي الملف المضغوط الكامل ثم افكّي الضغط وافتحي <b>index.html</b> بالنقر المزدوج (يعمل بلا إنترنت، وبياناته تُحفظ في متصفح ذلك الجهاز).</p>
+    <a class="btn" href="https://github.com/mariamemran1810-cloud/teacher-notebook/releases/download/v1.0/teacher-notebook-v1.0.zip">⬇️ تنزيل التطبيق كاملًا (ZIP)</a>
+  </section>
+
+  <section class="card">
+    <h2>🔒 ملاحظات مهمة</h2>
+    <ul>
+      <li>تُطلب بيانات الدخول (البريد وكلمة المرور) <b>على كل جهاز على حدة</b> — القفل محلي لكل متصفح.</li>
+      <li>بياناتكِ تبقى في متصفح جهازكِ ولا تُرفع إلى أي خادم.</li>
+      <li>بعد أول فتح تعمل الكراسة بلا إنترنت (التحضيرات والخطط والتلاميذ كلها متاحة).</li>
+      <li>عند صدور نسخة محدّثة: افتحي الرابط وحدّثي الصفحة بـ <b>Ctrl + F5</b> لتظهر التغييرات.</li>
+      <li>تذكّري تصدير نسخة احتياطية من بياناتكِ من داخل الكراسة بانتظام.</li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>📘 كراسة المعلم الليبي الرقمية — رياضيات المرحلة الإعدادية</footer>
+
+</body>
+</html>

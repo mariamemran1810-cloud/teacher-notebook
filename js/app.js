@@ -3044,6 +3044,14 @@
 
   /* ---------------- 17) بدء التشغيل ---------------- */
 
+  /** تسجيل ملف العمل بلا إنترنت: يُمكّن تثبيت التطبيق على الهاتف ويعمل بدون إنترنت */
+  function registerOffline() {
+    try {
+      if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
+      navigator.serviceWorker.register("sw.js").catch(function () { /* بلا إنترنت أو غير مدعوم: نتجاهل بصمت */ });
+    } catch (err) { /* بيئة لا تدعمه: نتجاهل */ }
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     bindAuth();
     initAuth();
@@ -3075,6 +3083,7 @@
     renderStudents();
     resetDiffForm();
     renderDiffs();
+    registerOffline();
   });
 
 })();
