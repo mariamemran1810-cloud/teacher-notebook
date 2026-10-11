@@ -50,6 +50,12 @@
       margin-top: 12px; background: var(--ivory-200); border: 1px dashed var(--gold-400);
       border-radius: 10px; padding: 9px 12px; font-size: 14px; color: #6b5a20;
     }
+    .btn[hidden] { display: none; }
+    .diag {
+      margin-top: 12px; background: #f4f7fb; border: 1px solid rgba(11, 26, 53, .12);
+      border-radius: 10px; padding: 10px 12px; font-size: 14px; color: var(--navy-800);
+    }
+    .card.alt { border-top-color: var(--navy-700); }
     .btn {
       display: inline-block; margin-top: 12px; background: linear-gradient(135deg, var(--gold-500), var(--gold-400));
       color: var(--navy-900); font-weight: 800; font-size: 16px;
@@ -76,6 +82,14 @@
 </header>
 
 <main class="wrap">
+
+  <section class="card alt" id="installCard">
+    <h2>📲 تثبيت بضغطة واحدة من هذا الجهاز</h2>
+    <p class="steps-note">إن كنتِ تفتحين الصفحة من الحاسوب أو الهاتف نفسه، اضغطي الزر أدناه لتظهر نافذة التثبيت الرسمية من المتصفح مباشرة:</p>
+    <button type="button" class="btn" id="btnInstallNow" hidden>📲 تثبيت التطبيق الآن</button>
+    <p class="tip" id="installHint">جارٍ فحص إمكانية التثبيت… إن لم يظهر الزر خلال لحظات، حدّثي الصفحة بـ <b>Ctrl + F5</b> ثم اتبعي الخطوات اليدوية أدناه.</p>
+    <div class="diag" id="diagBox">⏳جارٍ الفحص…</div>
+  </section>
 
   <section class="card">
     <h2>🤖 أندرويد — متصفح Google Chrome</h2>
@@ -127,6 +141,64 @@
 </main>
 
 <footer>📘 كراسة المعلم الليبي الرقمية — رياضيات المرحلة الإعدادية</footer>
+
+<script>
+(function () {
+  var deferred = null;
+  var btn = document.getElementById("btnInstallNow");
+  var hint = document.getElementById("installHint");
+
+  /* تفعيل عامل الخدمة من هذه الصفحة أيضًا */
+  try {
+    if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(function () {});
+  } catch (e) {}
+
+  /* نافذة التثبيت الرسمية من المتصفح */
+  window.addEventListener("beforeinstallprompt", function (e) {
+    e.preventDefault();
+    deferred = e;
+    btn.hidden = false;
+    hint.textContent = "اضغطي «📲 تثبيت التطبيق الآن» ثم «تثبيت» في النافذة التي تظهر.";
+  });
+
+  btn.addEventListener("click", function () {
+    if (!deferred) return;
+    var d = deferred; deferred = null;
+    d.prompt();
+    d.userChoice.then(function () { btn.hidden = true; }).catch(function () {});
+  });
+
+  window.addEventListener("appinstalled", function () {
+    btn.hidden = true;
+    hint.textContent = "✅ تم تثبيت التطبيق! ستجدينه في قائمة برامجك أو على سطح المكتب.";
+  });
+
+  /* صندوق التشخيص: يخبركِ بدقة ما الذي يمنع التثبيت */
+  setTimeout(function () {
+    var rows = [];
+    var mk = function (v) { return v ? "✅" : "❌"; };
+    var secure = location.protocol === "https:" || location.hostname === "localhost";
+
+    var p1 = fetch("manifest.webmanifest").then(function (r) { return r.json(); }).then(function (m) {
+      var full = !!(m.name && m.start_url && m.display === "standalone" && m.icons && m.icons.length >= 2);
+      rows.push(mk(full) + " ملف التثبيت (Manifest): " + (full ? "مكتمل ومقروء" : "ناقص البيانات"));
+    }).catch(function () { rows.push("❌ ملف التثبيت غير مقروء"); });
+
+    var p2 = (navigator.serviceWorker ? navigator.serviceWorker.getRegistration() : Promise.resolve(null)).then(function (reg) {
+      var on = !!(reg && (reg.active || reg.waiting || reg.installing));
+      rows.push(mk(on) + " عامل الخدمة (العمل بلا إنترنت): " + (on ? "مُفعّل" : "غير مُفعّل"));
+    }).catch(function () { rows.push("❌ عامل الخدمة غير مدعوم في هذا المتصفح"); });
+
+    Promise.all([p1, p2]).then(function () {
+      rows.push(mk(secure) + " الاتصال آمن (HTTPS): " + (secure ? "نعم" : "لا"));
+      rows.push(deferred
+        ? "✅ زر التثبيت «📲 تثبيت التطبيق الآن» جاهز أعلاه — اضغطيه."
+        : "ℹ️ لم يُطلِع المتصفح نافذة التثبيت تلقائيًا — اتبعي الخطوات اليدوية أسفل الصفحة، وأخبريني بنتيجة هذا الفحص إن لم تنجح.");
+      document.getElementById("diagBox").innerHTML = rows.join("<br>");
+    });
+  }, 1500);
+})();
+</script>
 
 </body>
 </html>
